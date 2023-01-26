@@ -47,40 +47,58 @@ router.get("/", (req, res) => {
 
 /**
  * Feature 7: Getting a specific starred restaurant.
- * working - but can I shorten the code?
  */
 router.get("/:id", (req, res) => {
-  const {id} = req.params
+  const { id } = req.params;
   const restaurant = STARRED_RESTAURANTS.find((restaurant) => {
-    return restaurant.restaurantId === id
-  })
+    return restaurant.restaurantId === id;
+  });
+  if (!restaurant) {
+    res.status(404).send("Restaurant not found in starred list");
+  }
   const restoWithName = ALL_RESTAURANTS.filter((fullResto) => {
-     return fullResto.id === restaurant.restaurantId
-  })
+    return fullResto.id === restaurant.restaurantId;
+  });
   const joinedResto = {
     name: restoWithName[0].name,
     restaurantId: restaurant.restaurantId,
-    comment: restaurant.comment
-  }
-  res.json(joinedResto)
-})
-
+    comment: restaurant.comment,
+  };
+  res.status(200).json(joinedResto);
+});
 
 /**
  * Feature 8: Adding to your list of starred restaurants.
  */
+router.post("/", (req, res) => {
+  const { restaurantId, comment } = req.body;
 
+  const foundStarred = STARRED_RESTAURANTS.find((starred) => {
+    return starred.restaurantId === restaurantId
+  })
 
+  if (foundStarred) {
+    res.status(400).send('Already starred')
+  }
+
+  const newId = uuidv4();
+
+  const newStarred = {
+    id: newId,
+    restaurantId: restaurantId,
+    comment: comment,
+  };
+
+  STARRED_RESTAURANTS.push(newStarred);
+  res.status(201).send(newStarred);
+});
 
 /**
  * Feature 9: Deleting from your list of starred restaurants.
  */
 
-
 /**
  * Feature 10: Updating your comment of a starred restaurant.
  */
-
-
 
 module.exports = router;

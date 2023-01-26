@@ -74,11 +74,11 @@ router.post("/", (req, res) => {
   const { restaurantId, comment } = req.body;
 
   const foundStarred = STARRED_RESTAURANTS.find((starred) => {
-    return starred.restaurantId === restaurantId
-  })
+    return starred.restaurantId === restaurantId;
+  });
 
   if (foundStarred) {
-    res.status(400).send('Already starred')
+    res.status(400).send("Already starred");
   }
 
   const newId = uuidv4();
@@ -96,6 +96,19 @@ router.post("/", (req, res) => {
 /**
  * Feature 9: Deleting from your list of starred restaurants.
  */
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+  const filteredRestaurants = STARRED_RESTAURANTS.filter((starred) => {
+    return starred.restaurantId !== id;
+  });
+
+  if (filteredRestaurants.length === STARRED_RESTAURANTS.length) {
+    res.status(400).send("Restaurant not found in starred list");
+  }
+
+  STARRED_RESTAURANTS = filteredRestaurants;
+  res.status(200).send(STARRED_RESTAURANTS);
+});
 
 /**
  * Feature 10: Updating your comment of a starred restaurant.

@@ -36,6 +36,7 @@ router.get("/", (req, res) => {
 
       return {
         id: starredRestaurant.id,
+        restaurantId: starredRestaurant.restaurantId,
         comment: starredRestaurant.comment,
         name: restaurant.name,
       };
@@ -79,6 +80,7 @@ router.post("/", (req, res) => {
 
   if (foundStarred) {
     res.status(400).send("Already starred");
+    return
   }
 
   const newId = uuidv4();
@@ -113,5 +115,21 @@ router.delete("/:id", (req, res) => {
 /**
  * Feature 10: Updating your comment of a starred restaurant.
  */
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { comment } = req.body;
+
+  const starredRestaurant = STARRED_RESTAURANTS.find((starred) => {
+    return starred.restaurantId === id;
+  });
+
+  if (!starredRestaurant) {
+    res.status(400).send("Restaurant not found in starred list");
+  }
+
+  starredRestaurant.comment = comment;
+
+  res.status(200).send(STARRED_RESTAURANTS);
+});
 
 module.exports = router;
